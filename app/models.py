@@ -5,6 +5,7 @@ from django.dispatch import receiver
 import datetime
 from django.core.validators import MaxValueValidator, MinValueValidator
 
+
 class Course(models.Model):
     title = models.CharField(max_length=100)
     year = models.IntegerField
@@ -18,7 +19,9 @@ class Project(models.Model):
     title = models.CharField(max_length=100)
     statement = models.CharField(max_length=300)
     date_start = models.DateTimeField(auto_now_add=True)
-    date_end = models.DateTimeField(auto_now=False, auto_now_add=False, blank=True)
+    date_end = models.DateTimeField(
+        auto_now=False, auto_now_add=False, blank=True, null=True
+    )
     date_deadline = models.DateTimeField(auto_now=False, auto_now_add=False)
     course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
 
