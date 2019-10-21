@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User, Group
+from app.models import Student
 from rest_framework import viewsets, permissions
-from app.api import UserSerializer, GroupSerializer
+from app.api import UserSerializer, GroupSerializer, StudentSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -21,3 +22,13 @@ class GroupViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAdminUser]
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
+
+
+class StudentViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows students to be viewed or edited.
+    """
+
+    permission_classes = [permissions.IsAdminUser]
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer

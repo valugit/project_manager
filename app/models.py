@@ -36,7 +36,8 @@ class Student(models.Model):
         validators=[
             MaxValueValidator(datetime.datetime.now().year + 5),
             MinValueValidator(2014),
-        ]
+        ],
+        default=datetime.datetime.now().year + 3,
     )
     # users = User.objects.all().select_related('profile')
 
