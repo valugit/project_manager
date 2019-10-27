@@ -69,7 +69,6 @@ class StudentManager(BaseUserManager):
 
 
 class Student(AbstractBaseUser):
-    desc = models.TextField(max_length=500, blank=True)
     year = models.IntegerField(
         validators=[
             MaxValueValidator(datetime.datetime.now().year + 5),
