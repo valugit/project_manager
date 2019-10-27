@@ -1,0 +1,5 @@
+pylint
+pylint-django
+black
+django-debug-toolbar
+tox
