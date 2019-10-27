@@ -1,7 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 import datetime
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator, MaxValueValidator
+
+
+def validate_suponly_email(value):
+    if not "@supinternet.fr" in value:
+        raise ValidationError(
+            "Sorry, the email submitted is invalid. All emails have to be from Sup'internet.",
+        )
 
 
 class Teacher(models.Model):
@@ -14,7 +22,7 @@ class Teacher(models.Model):
 
 class Course(models.Model):
     title = models.CharField(max_length=100)
-    year = models.IntegerField
+    year = models.IntegerField()
     teacher_id = models.ForeignKey(Teacher, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -76,7 +84,12 @@ class Student(AbstractBaseUser):
         ],
         default=2011,
     )
-    email = models.EmailField(verbose_name="email address", max_length=255, unique=True)
+    email = models.EmailField(
+        verbose_name="email address",
+        max_length=255,
+        unique=True,
+        validators=[validate_suponly_email],
+    )
     username = models.CharField(max_length=255)
     staff = models.BooleanField(default=False)
     admin = models.BooleanField(default=False)
@@ -92,7 +105,7 @@ class Student(AbstractBaseUser):
         super(Student, self).save(*args, **kwargs)
 
     def set_username(self):
-        return self.email.split("@").replace(".", " ").title()
+        return self.email.split("@")[0].replace(".", " ").title()
 
     def get_full_name(self):
         # The user is identified by their email address
