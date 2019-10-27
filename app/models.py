@@ -1,8 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 import datetime
+from django.utils import timezone
 from django.core.validators import MaxValueValidator, MinValueValidator
-import markdown
 
 
 class Teacher(models.Model):
@@ -32,7 +32,9 @@ class Project(models.Model):
     title = models.CharField(max_length=100)
     statement = models.TextField()
     date_start = models.DateTimeField(auto_now_add=True)
-    date_deadline = models.DateTimeField(auto_now=False, auto_now_add=False)
+    date_deadline = models.DateTimeField(
+        auto_now=False, auto_now_add=False, default=timezone.now
+    )
     course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -84,7 +86,7 @@ class Student(AbstractBaseUser):
         default=2011,
     )
     email = models.EmailField(verbose_name="email address", max_length=255, unique=True)
-    username = models.CharField(max_length=255)
+    username = models.CharField(max_length=255, editable=False)
     staff = models.BooleanField(default=False)
     admin = models.BooleanField(default=False)
 
@@ -99,7 +101,7 @@ class Student(AbstractBaseUser):
         super(Student, self).save(*args, **kwargs)
 
     def set_username(self):
-        return self.email.split("@").replace(".", " ").title()
+        return self.email.split("@")[0].replace(".", " ").title()
 
     def get_full_name(self):
         # The user is identified by their email address

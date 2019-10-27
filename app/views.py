@@ -1,4 +1,4 @@
-from app.models import Student, Teacher, Course, Project
+from app.models import Student, Teacher, Course, Project, ProjectGroup
 from rest_framework import viewsets, permissions
 from app.api import (
     StudentSerializer,
@@ -55,5 +55,5 @@ class ProjectGroupViewSet(viewsets.ModelViewSet):
     """
 
     permission_classes = [permissions.IsAdminUser]
-    queryset = Project.objects.all()
+    queryset = ProjectGroup.objects.all()
     serializer_class = ProjectGroupSerializer
