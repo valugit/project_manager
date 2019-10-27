@@ -5,42 +5,6 @@ from django.utils import timezone
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 
-class Teacher(models.Model):
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.first_name + " " + self.last_name
-
-
-class Course(models.Model):
-    title = models.CharField(max_length=100)
-    year = models.IntegerField(
-        validators=[
-            MaxValueValidator(datetime.datetime.now().year + 5),
-            MinValueValidator(2011),
-        ],
-        default=2011,
-    )
-    teacher_id = models.ForeignKey(Teacher, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.title
-
-
-class Project(models.Model):
-    title = models.CharField(max_length=100)
-    statement = models.TextField()
-    date_start = models.DateTimeField(auto_now_add=True)
-    date_deadline = models.DateTimeField(
-        auto_now=False, auto_now_add=False, default=timezone.now
-    )
-    course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.title
-
-
 class StudentManager(BaseUserManager):
     def create_student(self, email, year, password=None):
         """
@@ -135,10 +99,54 @@ class Student(AbstractBaseUser):
         return self.admin
 
 
+class Teacher(models.Model):
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.first_name + " " + self.last_name
+
+
+class Course(models.Model):
+    title = models.CharField(max_length=100)
+    year = models.IntegerField(
+        validators=[
+            MaxValueValidator(datetime.datetime.now().year + 5),
+            MinValueValidator(2011),
+        ],
+        default=2011,
+    )
+    teacher_id = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
+
+
+class Project(models.Model):
+    title = models.CharField(max_length=100)
+    statement = models.TextField()
+    date_start = models.DateTimeField(auto_now_add=True)
+    date_deadline = models.DateTimeField(
+        auto_now=False, auto_now_add=False, default=timezone.now
+    )
+    course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
+    creator_id = models.ForeignKey(Student, editable=False, on_delete=models.CASCADE)
+
+    def save(self, *args, **kwargs):
+        if not self.creator_id:
+            self.creator_id = self.set_creator_id()
+        super(Project, self).save(*args, **kwargs)
+
+    def set_creator_id(self):
+        return request.user.id
+
+    def __str__(self):
+        return self.title
+
+
 class ProjectGroup(models.Model):
     members = models.ManyToManyField(Student)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.project.title + " : " + self.members.all()[0].username + "'s group"
-
