@@ -3,3 +3,4 @@ pylint-django
 black
 django-debug-toolbar
 tox
+pip-tools

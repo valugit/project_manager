@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 import datetime
 from django.core.validators import MaxValueValidator, MinValueValidator
+import markdown
 
 
 class Teacher(models.Model):
@@ -14,7 +15,13 @@ class Teacher(models.Model):
 
 class Course(models.Model):
     title = models.CharField(max_length=100)
-    year = models.IntegerField
+    year = models.IntegerField(
+        validators=[
+            MaxValueValidator(datetime.datetime.now().year + 5),
+            MinValueValidator(2011),
+        ],
+        default=2011,
+    )
     teacher_id = models.ForeignKey(Teacher, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -23,7 +30,7 @@ class Course(models.Model):
 
 class Project(models.Model):
     title = models.CharField(max_length=100)
-    statement = models.CharField(max_length=300)
+    statement = models.TextField()
     date_start = models.DateTimeField(auto_now_add=True)
     date_deadline = models.DateTimeField(auto_now=False, auto_now_add=False)
     course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
