@@ -8,6 +8,9 @@ class Teacher(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.first_name + " " + self.last_name
+
 
 class Course(models.Model):
     title = models.CharField(max_length=100)
@@ -22,9 +25,6 @@ class Project(models.Model):
     title = models.CharField(max_length=100)
     statement = models.CharField(max_length=300)
     date_start = models.DateTimeField(auto_now_add=True)
-    date_end = models.DateTimeField(
-        auto_now=False, auto_now_add=False, blank=True, null=True
-    )
     date_deadline = models.DateTimeField(auto_now=False, auto_now_add=False)
     course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
 
@@ -77,6 +77,7 @@ class Student(AbstractBaseUser):
         default=2011,
     )
     email = models.EmailField(verbose_name="email address", max_length=255, unique=True)
+    username = models.CharField(max_length=255)
     staff = models.BooleanField(default=False)
     admin = models.BooleanField(default=False)
 
@@ -85,16 +86,24 @@ class Student(AbstractBaseUser):
 
     objects = StudentManager()
 
+    def save(self, *args, **kwargs):
+        if not self.username:
+            self.username = self.set_username()
+        super(Student, self).save(*args, **kwargs)
+
+    def set_username(self):
+        return self.email.split("@").replace(".", " ").title()
+
     def get_full_name(self):
         # The user is identified by their email address
-        return self.email
+        return self.username
 
     def get_short_name(self):
         # The user is identified by their email address
-        return self.email
+        return self.username
 
     def __str__(self):
-        return self.email
+        return self.username
 
     def has_perm(self, perm, obj=None):
         "Does the user have a specific permission?"
@@ -115,3 +124,12 @@ class Student(AbstractBaseUser):
     def is_admin(self):
         "Is the user a admin member?"
         return self.admin
+
+
+class ProjectGroup(models.Model):
+    members = models.ManyToManyField(Student)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.project.title + " : " + self.members.all()[0].username + "'s group"
+

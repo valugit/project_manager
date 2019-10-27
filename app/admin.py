@@ -3,7 +3,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from .forms import StudentAdminCreationForm, StudentAdminChangeForm
-from .models import Student
+from .models import Student, Teacher, Course, Project, ProjectGroup
 
 
 class StudentAdmin(BaseUserAdmin):
@@ -38,6 +38,10 @@ class StudentAdmin(BaseUserAdmin):
 
 
 admin.site.register(Student, StudentAdmin)
+admin.site.register(Teacher)
+admin.site.register(Course)
+admin.site.register(Project)
+admin.site.register(ProjectGroup)
 
 # Remove Group Model from admin. We're not using it.
 admin.site.unregister(Group)
