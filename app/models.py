@@ -1,15 +1,18 @@
 from django.db import models
-from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 import datetime
 from django.core.validators import MaxValueValidator, MinValueValidator
+
+
+class Teacher(models.Model):
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
 
 
 class Course(models.Model):
     title = models.CharField(max_length=100)
     year = models.IntegerField
-    teacher = models.CharField(max_length=100)
+    course_id = models.ForeignKey(Teacher, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
@@ -27,27 +30,3 @@ class Project(models.Model):
 
     def __str__(self):
         return self.title
-
-
-class Student(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True)
-    desc = models.TextField(max_length=500, blank=True)
-    year = models.IntegerField(
-        validators=[
-            MaxValueValidator(datetime.datetime.now().year + 5),
-            MinValueValidator(2014),
-        ]
-    )
-    # users = User.objects.all().select_related('profile')
-
-
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Student.objects.create(user=instance)
-
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.student.save()
-
