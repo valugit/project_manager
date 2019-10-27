@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 import datetime
+from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 
@@ -8,7 +9,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 def validate_suponly_email(value):
     if not "@supinternet.fr" in value:
         raise ValidationError(
-            "Sorry, the email submitted is invalid. All emails have to be from Sup'internet.",
+            "Sorry, the email submitted is invalid. All emails have to be from Sup'internet."
         )
 
 
@@ -22,7 +23,13 @@ class Teacher(models.Model):
 
 class Course(models.Model):
     title = models.CharField(max_length=100)
-    year = models.IntegerField()
+    year = models.IntegerField(
+        validators=[
+            MaxValueValidator(datetime.datetime.now().year + 5),
+            MinValueValidator(2011),
+        ],
+        default=2011,
+    )
     teacher_id = models.ForeignKey(Teacher, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -31,9 +38,11 @@ class Course(models.Model):
 
 class Project(models.Model):
     title = models.CharField(max_length=100)
-    statement = models.CharField(max_length=300)
+    statement = models.TextField()
     date_start = models.DateTimeField(auto_now_add=True)
-    date_deadline = models.DateTimeField(auto_now=False, auto_now_add=False)
+    date_deadline = models.DateTimeField(
+        auto_now=False, auto_now_add=False, default=timezone.now
+    )
     course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -90,7 +99,7 @@ class Student(AbstractBaseUser):
         unique=True,
         validators=[validate_suponly_email],
     )
-    username = models.CharField(max_length=255)
+    username = models.CharField(max_length=255, editable=False)
     staff = models.BooleanField(default=False)
     admin = models.BooleanField(default=False)
 

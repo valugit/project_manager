@@ -1,11 +1,11 @@
-from app.models import Student, Teacher, Course, Project
+from app.models import Student, Teacher, Course, Project, ProjectGroup
 from rest_framework import serializers
 
 
 class StudentSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Student
-        fields = ["url", "email", "year"]
+        fields = ["url", "username", "email", "year"]
 
 
 class TeacherSerializer(serializers.HyperlinkedModelSerializer):
@@ -32,3 +32,8 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
             "course_id",
         ]
 
+
+class ProjectGroupSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ProjectGroup
+        fields = ["url", "members", "project"]
