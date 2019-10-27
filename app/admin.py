@@ -24,7 +24,13 @@ class StudentAdmin(BaseUserAdmin):
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
     add_fieldsets = (
-        (None, {"classes": ("wide",), "fields": ("email", "password1", "password2")}),
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": ("email", "year", "password1", "password2"),
+            },
+        ),
     )
     search_fields = ("email",)
     ordering = ("email",)
@@ -32,7 +38,6 @@ class StudentAdmin(BaseUserAdmin):
 
 
 admin.site.register(Student, StudentAdmin)
-
 
 # Remove Group Model from admin. We're not using it.
 admin.site.unregister(Group)
