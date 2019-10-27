@@ -20,6 +20,9 @@ from app import views
 
 router = routers.DefaultRouter()
 router.register(r"students", views.StudentViewSet)
+router.register(r"teachers", views.TeacherViewSet)
+router.register(r"courses", views.CourseViewSet)
+router.register(r"projects", views.ProjectViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
