@@ -30,6 +30,7 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
             "date_start",
             "date_deadline",
             "course_id",
+            "creator_id",
         ]
 
 
