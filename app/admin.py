@@ -1,16 +1,6 @@
-# from django.contrib import admin
-# from app import models
-
-# # Register your models here.
-# admin.site.register(models.Project)
-# admin.site.register(models.Student)
-# admin.site.register(models.Course)
-
 from django.contrib import admin
-
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-
 
 from .forms import StudentAdminCreationForm, StudentAdminChangeForm
 from .models import Student
