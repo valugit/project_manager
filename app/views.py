@@ -7,7 +7,7 @@ from app.api import (
     ProjectSerializer,
     ProjectGroupSerializer,
 )
-from app.permissions import IsOwnerOrReadOnly
+from app.permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
 
 
 class StudentViewSet(viewsets.ModelViewSet):
@@ -25,7 +25,7 @@ class TeacherViewSet(viewsets.ModelViewSet):
     API endpoint that allows teachers to be viewed or edited.
     """
 
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
     queryset = Teacher.objects.all()
     serializer_class = TeacherSerializer
 
@@ -45,9 +45,23 @@ class ProjectViewSet(viewsets.ModelViewSet):
     API endpoint that allows projects to be viewed or edited.
     """
 
-    permission_classes = [IsOwnerOrReadOnly, permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
+
+    def get_permissions(self):
+        if self.request.method == "DELETE":
+            self.permission_classes = [
+                permissions.IsAuthenticatedOrReadOnly,
+                permissions.IsAdminUser,
+            ]
+        elif self.request.method == "PUT":
+            self.permission_classes = [
+                permissions.IsAuthenticatedOrReadOnly,
+                IsOwnerOrReadOnly,
+            ]
+
+        return super(ProjectViewSet, self).get_permissions()
 
     def perform_create(self, serializer):
         serializer.save(creator_id=self.request.user)
