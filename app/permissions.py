@@ -13,6 +13,18 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         return False
 
 
+class IsUserOrReadOnly(permissions.BasePermission):
+    """
+    Custom permission to only allow owners of an object to edit it.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        if obj.email == request.user.email:
+            return True
+
+        return False
+
+
 class IsMemberOrReadOnly(permissions.BasePermission):
     """
     Custom permission to only allow members of an object to edit it.

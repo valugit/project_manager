@@ -7,7 +7,7 @@ from app.api import (
     ProjectSerializer,
     ProjectGroupSerializer,
 )
-from app.permissions import IsOwnerOrReadOnly, IsMemberOrReadOnly
+from app.permissions import IsOwnerOrReadOnly, IsMemberOrReadOnly, IsUserOrReadOnly
 
 
 class StudentViewSet(viewsets.ModelViewSet):
@@ -18,6 +18,20 @@ class StudentViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
+
+    def get_permissions(self):
+        if self.request.method == "DELETE":
+            self.permission_classes = [
+                permissions.IsAuthenticatedOrReadOnly,
+                permissions.IsAdminUser,
+            ]
+        elif self.request.method == "PUT":
+            self.permission_classes = [
+                permissions.IsAuthenticatedOrReadOnly,
+                IsUserOrReadOnly,
+            ]
+
+        return super(StudentViewSet, self).get_permissions()
 
 
 class TeacherViewSet(viewsets.ModelViewSet):

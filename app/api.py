@@ -3,9 +3,17 @@ from rest_framework import serializers
 
 
 class StudentSerializer(serializers.HyperlinkedModelSerializer):
+    password = serializers.CharField(write_only=True)
+
     class Meta:
         model = Student
-        fields = ["url", "username", "email", "year"]
+        fields = ["url", "username", "email", "year", "password"]
+
+    def create(self, validated_data):
+        user = super(StudentSerializer, self).create(validated_data)
+        user.set_password(validated_data["password"])
+        user.save()
+        return user
 
 
 class TeacherSerializer(serializers.HyperlinkedModelSerializer):
