@@ -43,5 +43,4 @@ admin.site.register(Course)
 admin.site.register(Project)
 admin.site.register(ProjectGroup)
 
-# Remove Group Model from admin. We're not using it.
 admin.site.unregister(Group)

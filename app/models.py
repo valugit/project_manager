@@ -145,14 +145,6 @@ class Project(models.Model):
     course_id = models.ForeignKey(Course, on_delete=models.CASCADE)
     creator_id = models.ForeignKey(Student, editable=False, on_delete=models.CASCADE)
 
-    def save(self, *args, **kwargs):
-        if not self.creator_id:
-            self.creator_id = self.set_creator_id()
-        super(Project, self).save(*args, **kwargs)
-
-    def set_creator_id(self):
-        return request.user.id
-
     def __str__(self):
         return self.title
 
