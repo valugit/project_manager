@@ -7,7 +7,7 @@ from app.api import (
     ProjectSerializer,
     ProjectGroupSerializer,
 )
-from app.permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
+from app.permissions import IsOwnerOrReadOnly, IsMemberOrReadOnly
 
 
 class StudentViewSet(viewsets.ModelViewSet):
@@ -25,9 +25,18 @@ class TeacherViewSet(viewsets.ModelViewSet):
     API endpoint that allows teachers to be viewed or edited.
     """
 
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset = Teacher.objects.all()
     serializer_class = TeacherSerializer
+
+    def get_permissions(self):
+        if not self.request.method == "GET":
+            self.permission_classes = [
+                permissions.IsAuthenticatedOrReadOnly,
+                permissions.IsAdminUser,
+            ]
+
+        return super(TeacherViewSet, self).get_permissions()
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -38,6 +47,15 @@ class CourseViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
+
+    def get_permissions(self):
+        if not self.request.method == "GET":
+            self.permission_classes = [
+                permissions.IsAuthenticatedOrReadOnly,
+                permissions.IsAdminUser,
+            ]
+
+        return super(CourseViewSet, self).get_permissions()
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -75,3 +93,17 @@ class ProjectGroupViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset = ProjectGroup.objects.all()
     serializer_class = ProjectGroupSerializer
+
+    def get_permissions(self):
+        if self.request.method == "DELETE":
+            self.permission_classes = [
+                permissions.IsAuthenticatedOrReadOnly,
+                permissions.IsAdminUser,
+            ]
+        elif self.request.method == "PUT":
+            self.permission_classes = [
+                permissions.IsAuthenticatedOrReadOnly,
+                IsMemberOrReadOnly,
+            ]
+
+        return super(ProjectGroupViewSet, self).get_permissions()
